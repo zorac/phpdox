@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 namespace TheSeer\phpDox;
 
+use SebastianBergmann\Timer\ResourceUsageFormatter;
 use SebastianBergmann\Timer\Timer;
 
 /**
@@ -27,6 +28,11 @@ class ShellProgressLogger implements ProgressLogger {
     ];
 
     /**
+     * @var Timer
+     */
+    private $timer;
+
+    /**
      * @param string $processed
      * @param string $cached
      * @param string $failed
@@ -37,6 +43,8 @@ class ShellProgressLogger implements ProgressLogger {
             'cached'    => $cached,
             'failed'    => $failed
         ];
+        $this->timer = new Timer();
+        $this->timer->start();
     }
 
     /**
@@ -65,6 +73,7 @@ class ShellProgressLogger implements ProgressLogger {
             'cached'    => 0,
             'failed'    => 0
         ];
+        $this->timer->start();
     }
 
     public function completed(): void {
@@ -88,7 +97,7 @@ class ShellProgressLogger implements ProgressLogger {
 
     public function buildSummary(): void {
         print "\n\n";
-        print Timer::resourceUsage();
+        print (new ResourceUsageFormatter)->resourceUsage($this->timer->stop());
         print "\n\n";
     }
 }
